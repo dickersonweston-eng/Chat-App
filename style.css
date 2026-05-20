@@ -7,17 +7,31 @@ body{
     font-family: 'Segoe UI', sans-serif;
     background: #1a1a2e;
     color: #e0e0e0;
-    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    justify-content: stretch;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
-/* ── Login ── */
+html, body {
+    min-height: 100%;
+    width: 100%;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
 #login-screen{
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%; height: 100%;
+    width: 100vw; 
+    height: 100vh;
 }
 .login-box{
     background: #16213e;
@@ -43,6 +57,9 @@ body{
     outline: none;
     margin-bottom: 12px;
     transition: border 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-clip: padding-box;
 }
 .login-box input:focus{
     border-color: #7c83fd;
@@ -64,12 +81,12 @@ body{
 /* ── Chat Layout ── */
 #chat-screen{
     display: flex;
-    width: 100%; height: 100%;
-    max-width: 1100px;
-    max-width: 700px;
-    border-radius: 16px;
+    width: 100%;
+    min-height: 100vh;
+    max-width: none;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    box-shadow: none;
 }
 .hidden{
     display: none !important;
@@ -77,6 +94,7 @@ body{
 /* ── Sidebar ── */
 .sidebar{
     width: 220px;
+    min-height: 0;
     background: #16213e;
     display: flex;
     flex-direction: column;
@@ -133,7 +151,7 @@ body{
     justify-content: space-between;
     font-size: 0.85rem;
 }
-#currenet-user-label{
+#current-user-label{
     color: #8c83fd;
     font-weight: 600;
     overflow: hidden;
@@ -157,10 +175,11 @@ body{
 }
 /* ── Chat Area ── */
 .chat-area{
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     background: #0f1b35;
+    min-height: 0;
 }
 .chat-header{
     padding: 16px 24px;
@@ -207,16 +226,17 @@ body{
     flex-direction: column;
     max-width: 70%;
     animation: fadeIn 0.2s ease;
+    width: fit-content;
 }
 @keyframes fadeIn{
     from {opacity: 0; transform: translateY(6px);}
     to {opacity: 1; transform: translateY(0);}
 }
-.message-own{
+.message.own{
     align-self: flex-end;
     align-items: flex-end;
 }
-.message-other{
+.message.other{
     align-self: flex-start;
     align-items: flex-start;
 }
@@ -252,20 +272,53 @@ body{
     padding: 16px 24px;
     gap: 10px;
     border-top: 1px solid #1e2d5a;
+    margin-top: auto;
+    width: 100%;
+    box-sizing: border-box;
+    position: sticky;
+    bottom: 0;
+    background: #0f1b35;
+    z-index: 2;
 }
 .message-input{
     flex: 1;
+    min-width: 0;
+    width: 100%;
     padding: 12px 16px;
     border-radius: 10px;
-    border: 2px solid #1e2d5a;
+    border: 2px solid #7c83fd;
     background: #16213e;
     color: #fff;
     font-size: 0.95rem;
     outline: none;
-    transition: border 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 0 8px rgba(124, 131, 253, 0.2);
+    box-sizing: border-box;
+    height: 44px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-clip: padding-box;
+}
+
+#send-btn{
+    padding: 12px 22px;
+    background: #7c83fd;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    height: 44px;
+    white-space: nowrap;
+    min-width: 80px;
+    width: auto;
 }
 #message-input:focus{
     border-color: #7c83fd;
+    box-shadow: 0 0 12px rgba(124, 131, 253, 0.4);
+    background: #1a2847;
 }
 #send-btn{
     padding: 12px 22px;
@@ -276,7 +329,417 @@ body{
     font-size: 0.95rem;
     cursor: pointer;
     transition: background 0.2s;
+    flex-shrink: 0;
+    height: 44px;
+    white-space: nowrap;
 }
 #send-btn:hover{
     background: #5c64f5;
+}
+
+/* ── Custom Room Buttons ── */
+.custom-room-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 8px;
+    margin-top: auto;
+}
+
+.room-action-btn{
+    width: 100%;
+    padding: 10px 12px;
+    background: #7c83fd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.room-action-btn:hover{
+    background: #5c64f5;
+}
+
+/* ── Modal ── */
+.modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hidden{
+    display: none !important;
+}
+
+.modal-content{
+    background: #16213e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content h2{
+    color: #7c83fd;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.modal-content input{
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #2a2a5a;
+    background: #0f3460;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 20px;
+    transition: border 0.2s;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus{
+    border-color: #7c83fd;
+}
+
+.modal-buttons{
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-btn.create{
+    background: #7c83fd;
+    color: #fff;
+}
+
+.modal-btn.create:hover{
+    background: #5c64f5;
+}
+
+.modal-btn.cancel{
+    background: #2a2a5a;
+    color: #aaa;
+}
+
+.modal-btn.cancel:hover{
+    background: #3a3a7a;
+}
+
+/* ── Custom Room Buttons ── */
+.custom-room-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 8px;
+    margin-top: auto;
+}
+
+.room-action-btn{
+    width: 100%;
+    padding: 10px 12px;
+    background: #7c83fd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.room-action-btn:hover{
+    background: #5c64f5;
+}
+
+/* ── Modal ── */
+.modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hidden{
+    display: none !important;
+}
+
+.modal-content{
+    background: #16213e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content h2{
+    color: #7c83fd;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.modal-content input{
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 2px solid #2a2a5a;
+    background: #0f3460;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 20px;
+    transition: border 0.2s;
+    box-sizing: border-box;
+}
+
+.modal-content input:focus{
+    border-color: #7c83fd;
+}
+
+.modal-buttons{
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-btn{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-btn.create{
+    background: #7c83fd;
+    color: #fff;
+}
+
+.modal-btn.create:hover{
+    background: #5c64f5;
+}
+
+.modal-btn.cancel{
+    background: #2a2a5a;
+    color: #aaa;
+}
+
+.modal-btn.cancel:hover{
+    background: #3a3a7a;
+}
+/* ── Mobile Responsive ── */
+@media (max-width: 768px) {
+    #chat-screen {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        max-height: none;
+        flex-direction: column;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+    .sidebar-header {
+        padding: 10px 0;
+        border-bottom: 1px solid #2a2a5a;
+        border-right: none;
+        margin-right: 0;
+    }
+
+    .sidebar-header h2 {
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    #online-count {
+        display: none;
+    }
+
+    .rooms-label {
+        display: none;
+    }
+
+    #rooms-list {
+        display: flex;
+        gap: 5px;
+        margin-right: 10px;
+        overflow-x: auto;
+        flex: 1;
+    }
+
+    #rooms-list li {
+        margin: 0;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .custom-room-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        padding: 0;
+        margin-top: 0;
+    }
+
+    .room-action-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    .user-info {
+        display: none;
+    }
+
+    #chat-screen {
+        flex-direction: column;
+    }
+
+    .chat-area {
+        width: 100%;
+        height: calc(100vh - 120px);
+    }
+
+    .message {
+        max-width: 85%;
+    }
+
+    .chat-header {
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+
+    #messages {
+        padding: 12px 16px;
+        gap: 8px;
+    }
+
+    .message .bubble {
+        padding: 8px 12px;
+        font-size: 0.88rem;
+    }
+
+    .input-area {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 12px 16px;
+        gap: 8px;
+    }
+
+    .message-input {
+        height: 40px;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    #send-btn {
+        height: 40px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        min-width: 80px;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.1rem;
+    }
+
+    .modal-content input {
+        font-size: 16px;
+        padding: 10px 12px;
+        appearance: none;
+        -webkit-appearance: none;
+        background-clip: padding-box;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        max-height: 100px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 0.85rem;
+    }
+
+    #rooms-list li {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    .room-action-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+
+    .chat-header {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    #messages {
+        padding: 10px 12px;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+
+    .message .bubble {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .input-area {
+        padding: 10px 12px;
+        gap: 6px;
+    }
+
+    .message-input {
+        height: 36px;
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+
+    #send-btn {
+        height: 36px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
 }
