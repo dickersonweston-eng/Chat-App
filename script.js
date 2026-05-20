@@ -29,12 +29,22 @@ const joinBtn = document.getElementById("join-btn");
 const messagesEl = document.getElementById("messages");
 const messageInput = document.getElementById("message-input");
 const sendBtn = document.getElementById("send-btn");
-const roomItems = document.querySelectorAll(".room");
+const roomsList = document.getElementById("rooms-list");
 const roomTitle = document.getElementById("room-title");
 const typingIndicator = document.getElementById("typing-indicator");
 const onlineCount = document.getElementById("online-count");
 const currentUserLabel = document.getElementById("current-user-label");
 const logoutBtn = document.getElementById("logout-btn");
+const createRoomBtn = document.getElementById("create-room-btn");
+const joinRoomBtn = document.getElementById("join-room-btn");
+const createRoomModal = document.getElementById("create-room-modal");
+const joinRoomModal = document.getElementById("join-room-modal");
+const confirmCreateBtn = document.getElementById("confirm-create-btn");
+const closeCreateBtn = document.getElementById("close-create-btn");
+const confirmJoinBtn = document.getElementById("confirm-join-btn");
+const closeJoinBtn = document.getElementById("close-join-btn");
+const newRoomIdInput = document.getElementById("new-room-id");
+const joinRoomIdInput = document.getElementById("join-room-id");
 
 //─────────────────────────────────────────
 // JOIN
@@ -52,6 +62,7 @@ function joinChat(){
     chatScreen.classList.remove("hidden");
 
     registerPresence();
+    attachRoomListeners();
     switchRoom("general");
     listenToOnlineUsers();
 }
@@ -80,16 +91,19 @@ function listenToOnlineUsers(){
 //─────────────────────────────────────────
 // ROOMS
 // ─────────────────────────────────────────
-roomItems.forEach(item => {
-    item.addEventListener("click", () => {
-        const room = item.dataset.room;
-        if (room === currentRoom) return;
+function attachRoomListeners() {
+    const roomItems = document.querySelectorAll(".room");
+    roomItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const room = item.dataset.room;
+            if (room === currentRoom) return;
 
-        roomItems.forEach(r => r.classList.remove("active"));
-        item.classList.add("active");
-        switchRoom(room);
+            document.querySelectorAll(".room").forEach(r => r.classList.remove("active"));
+            item.classList.add("active");
+            switchRoom(room);
+        });
     });
-});
+}
 
 function switchRoom(room){
     clearTyping();
@@ -104,6 +118,83 @@ function switchRoom(room){
 
     listenToMessages();
     listenToTyping();
+}
+
+createRoomBtn.addEventListener("click", () => {
+    createRoomModal.classList.remove("hidden");
+    newRoomIdInput.focus();
+});
+
+joinRoomBtn.addEventListener("click", () => {
+    joinRoomModal.classList.remove("hidden");
+    joinRoomIdInput.focus();
+});
+
+closeCreateBtn.addEventListener("click", () => {
+    createRoomModal.classList.add("hidden");
+});
+
+closeJoinBtn.addEventListener("click", () => {
+    joinRoomModal.classList.add("hidden");
+});
+
+confirmCreateBtn.addEventListener("click", createCustomRoom);
+confirmJoinBtn.addEventListener("click", joinCustomRoom);
+
+newRoomIdInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") createCustomRoom();
+});
+
+joinRoomIdInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") joinCustomRoom();
+});
+
+// Close modals when clicking outside
+createRoomModal.addEventListener("click", (e) => {
+    if (e.target === createRoomModal) {
+        createRoomModal.classList.add("hidden");
+    }
+});
+
+joinRoomModal.addEventListener("click", (e) => {
+    if (e.target === joinRoomModal) {
+        joinRoomModal.classList.add("hidden");
+    }
+});
+
+function createCustomRoom() {
+    const roomId = newRoomIdInput.value.trim().toLowerCase().replace(/\s+/g, "-");
+    if (!roomId) return;
+    
+    newRoomIdInput.value = "";
+    createRoomModal.classList.add("hidden");
+    
+    addRoomToSidebar(roomId);
+    switchRoom(roomId);
+}
+
+function joinCustomRoom() {
+    const roomId = joinRoomIdInput.value.trim().toLowerCase().replace(/\s+/g, "-");
+    if (!roomId) return;
+    
+    joinRoomIdInput.value = "";
+    joinRoomModal.classList.add("hidden");
+    
+    addRoomToSidebar(roomId);
+    switchRoom(roomId);
+}
+
+function addRoomToSidebar(roomId) {
+    // Check if room already exists
+    if (document.querySelector(`[data-room="${roomId}"]`)) return;
+    
+    const li = document.createElement("li");
+    li.className = "room";
+    li.dataset.room = roomId;
+    li.textContent = `🔒 ${roomId}`;
+    roomsList.appendChild(li);
+    
+    attachRoomListeners();
 }
 
 //─────────────────────────────────────────
@@ -143,10 +234,8 @@ function listenToMessages(){
     });
 }
 function renderMessage(data){
-    if (!data.timestamp) return; //Skip optimistic writes mid-flight
-
     const isOwn = data.sender === currentUser;
-    const time = data.timestamp.toDate().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+    const time = data.timestamp ? data.timestamp.toDate().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "...";
 
     const div = document.createElement("div");
     div.className = `message ${isOwn ? "own" : "other"}`;
@@ -161,7 +250,7 @@ function scrollToBottom(){
 }
 
 function escapeHTML(str){
-    return str.replace(/&/g, "&amp;").replace(/>/g, "&gt;");
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 //─────────────────────────────────────────
