@@ -24,11 +24,15 @@
                     <span id="online-count">0</span>
                 </div>
                 <div class="rooms-label">Rooms</div>
-                <ui id="rooms-list">
-                    <li class="room-active" data-room="general">🌐 General</li>
+                <ul id="rooms-list">
+                    <li class="room active" data-room="general">🌐 General</li>
                     <li class="room" data-room="random">🎲 Random</li>
                     <li class="room" data-room="tech">💻 Tech</li>
-                </ui>
+                </ul>
+                <div class="custom-room-actions">
+                    <button id="create-room-btn" class="room-action-btn">+ Create Room</button>
+                    <button id="join-room-btn" class="room-action-btn">🔗 Join Room</button>
+                </div>
                 <div class="user-info">
                     <span id="current-user-label"></span>
                     <button id="logout-btn">Leave</button>
@@ -40,12 +44,37 @@
                     <span id="typing-indicator"></span>
                 </div>
                 <div id="messages"></div>
-                <div id="input-area">
-                    <input type="text" id="message-input" placeholder="Type A Message..." maxlength="500"/>
+                <div class="input-area">
+                    <input type="text" id="message-input" class="message-input" placeholder="Type A Message..." maxlength="500"/>
                     <button id="send-btn">Send</button>
                 </div>
             </div>
           </div>
+          
+          <!-- Modal for creating room -->
+          <div id="create-room-modal" class="modal hidden">
+              <div class="modal-content">
+                  <h2>Create Custom Room</h2>
+                  <input type="text" id="new-room-id" placeholder="Room ID (e.g., gaming-crew)" maxlength="30"/>
+                  <div class="modal-buttons">
+                      <button id="confirm-create-btn" class="modal-btn create">Create</button>
+                      <button id="close-create-btn" class="modal-btn cancel">Cancel</button>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Modal for joining room -->
+          <div id="join-room-modal" class="modal hidden">
+              <div class="modal-content">
+                  <h2>Join Room</h2>
+                  <input type="text" id="join-room-id" placeholder="Enter Room ID..." maxlength="30"/>
+                  <div class="modal-buttons">
+                      <button id="confirm-join-btn" class="modal-btn create">Join</button>
+                      <button id="close-join-btn" class="modal-btn cancel">Cancel</button>
+                  </div>
+              </div>
+          </div>
+          
           <!-- Firebase SDKs (compat version — easiest for 3-file setup) -->
            <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
            <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
